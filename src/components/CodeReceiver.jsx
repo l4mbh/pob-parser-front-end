@@ -6,10 +6,10 @@ import axios from "axios";
 const CodeReceiver = () => {
   const [enteredCode, setEnteredCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { setSkillGems, setItems, setNotes, appLoading, setAppLoading } = useAppContext();
+  const { setSkillGems, setItems, setNotes, appLoading, setAppLoading } =
+    useAppContext();
 
   const PARSER_HOST = import.meta.env.VITE_PARSER_HOST;
-  const CORS_HOST = import.meta.env.VITE_CORS_HOST;
 
   const codeReceiverHandler = (e) => {
     setEnteredCode(e.target.value);
@@ -17,19 +17,28 @@ const CodeReceiver = () => {
 
   const fetchItemData = async (skillId, toastId) => {
     try {
-      const response = await axios.get(
-        `https://www.poewiki.net/w/api.php?action=cargoquery&tables=skill_gems,skill,items&where=skill.skill_id="${skillId}"&fields=primary_attribute,name,inventory_icon,skill_id&format=json&join_on=skill._pageID=skill_gems._pageID,skill._pageID=items._pageID`
+      const response = await axios.post(`${PARSER_HOST}/api/poewiki-skills`, {
+        skillId: skillId,
+      });
+
+      // console.log(JSON.parse(response.data))
+
+      const extraData = JSON.parse(response.data).cargoquery[0].title;
+      extraData["inventory icon"] = extraData["inventory icon"].replace(
+        /^File:/,
+        ""
       );
 
-      const extraData = response.data.cargoquery[0].title;
-      extraData["inventory icon"] = extraData["inventory icon"].replace(/^File:/, "");
-
-      const imageResponse = await axios.get(
-        `https://www.poewiki.net/w/api.php?action=query&titles=Image:${extraData["inventory icon"]}&prop=imageinfo&iiprop=url&format=json`
+      const imageResponse = await axios.post(
+        `${PARSER_HOST}/api/poewiki-skill-img`,
+        { skillImageName: extraData["inventory icon"] }
       );
 
-      const pageIds = Object.keys(imageResponse.data.query.pages);
-      const imgUrl = imageResponse.data.query.pages[pageIds[0]].imageinfo[0].url;
+      const imgResponseObj = JSON.parse(imageResponse.data);
+
+      const pageIds = Object.keys(imgResponseObj.query.pages);
+      const imgUrl =
+      imgResponseObj.query.pages[pageIds[0]].imageinfo[0].url;
       extraData.gemIconUrl = imgUrl;
 
       return extraData;
@@ -47,13 +56,16 @@ const CodeReceiver = () => {
 
   const trimItemData = (itemData) => {
     return itemData.map((item) => {
-      return item["_"]
+      return item["_"];
     });
-  }
+  };
 
   const parseItemData = (itemData) => {
     return itemData.map((item) => {
-      const itemInfo = item.trim().split("\n").map((line) => line.trim());
+      const itemInfo = item
+        .trim()
+        .split("\n")
+        .map((line) => line.trim());
       const parsedItem = {
         rarity: itemInfo[0].split(": ")[1].trim(),
         item_name: itemInfo[1].trim(),
@@ -64,7 +76,7 @@ const CodeReceiver = () => {
         enchant: [],
         pseudo: [],
         additional_info: {},
-        item_specific_mods: []
+        item_specific_mods: [],
       };
 
       const implicitsCount = parseInt(item.match(/Implicits: (\d+)/)[1]);
@@ -76,19 +88,27 @@ const CodeReceiver = () => {
         } else if (line.includes("{fractured}")) {
           parsedItem.fractured.push(line.replace("{fractured}", "").trim());
         } else if (line.includes("{crafted}")) {
-          if(!parsedItem.implicits.includes(line)) {
+          if (!parsedItem.implicits.includes(line)) {
             parsedItem.crafted.push(line.replace("{crafted}", "").trim());
           }
         } else if (line.includes("{enchant}")) {
           parsedItem.enchant.push(line.replace("{enchant}", "").trim());
         } else if (/[+\-%]/.test(line)) {
-          if (!line.includes("{fractured}") && !line.includes("{crafted}") && !line.includes("{enchant}") && !parsedItem.implicits.includes(line.trim())) {
+          if (
+            !line.includes("{fractured}") &&
+            !line.includes("{crafted}") &&
+            !line.includes("{enchant}") &&
+            !parsedItem.implicits.includes(line.trim())
+          ) {
             parsedItem.pseudo.push(line.trim());
           }
         } else if (line.includes(":")) {
           const [key, value] = line.split(":").map((str) => str.trim());
           parsedItem.additional_info[key] = value;
-        } else if(!line.includes(parsedItem.item_name) && !line.includes(parsedItem.item_base_name)) {
+        } else if (
+          !line.includes(parsedItem.item_name) &&
+          !line.includes(parsedItem.item_base_name)
+        ) {
           parsedItem.item_specific_mods.push(line.trim());
         }
       });
@@ -104,7 +124,7 @@ const CodeReceiver = () => {
       const group = groupObj.$;
       const slot = group.slot;
 
-      let groupData = result.find(item => item.slot === slot);
+      let groupData = result.find((item) => item.slot === slot);
       if (!groupData) {
         groupData = { slot, gems: [] };
         result.push(groupData);
@@ -131,14 +151,10 @@ const CodeReceiver = () => {
 
   const pobParser = async (postData) => {
     try {
-      const response = await fetch(`${PARSER_HOST}/pob`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: postData })
-      });
+      const response = await axios.post(`${PARSER_HOST}/api/pob-parser`, { code: postData });
 
-      if (!response.ok) throw new Error("Failed to parse PoB data");
-      return response.json();
+      // if (!response.ok) throw new Error("Failed to parse PoB data");
+      return response.data;
     } catch (error) {
       console.error("Error:", error);
       toast.error("Error: " + error.message);
@@ -146,8 +162,7 @@ const CodeReceiver = () => {
     }
   };
 
-
-  const fetchPobData = useCallback( async (pobbUrl, toastId) => {
+  const fetchPobData = useCallback(async (pobbUrl, toastId) => {
     toast.update(toastId, {
       render: "Getting Pobb.in data...",
       type: "loading",
@@ -157,8 +172,9 @@ const CodeReceiver = () => {
     });
 
     try {
-      const res = await axios.get(`${pobbUrl}/raw`);
-      if (res.statusText !== "OK") throw new Error("Invalid Pobb.in URL or data not found!");
+      const res = await axios.post(`${PARSER_HOST}/api/pobb`, { url: pobbUrl });
+      if (res.statusText !== "OK")
+        throw new Error("Invalid Pobb.in URL or data not found!");
       return res.data;
     } catch (error) {
       toast.update(toastId, {
@@ -189,10 +205,8 @@ const CodeReceiver = () => {
 
       const parsedData = await pobParser(pobData);
 
-      
-      
       setNotes(parsedData.notes[0]);
-      
+
       toast.update(toastId, {
         render: "Transforming data...",
         type: "loading",
@@ -200,7 +214,7 @@ const CodeReceiver = () => {
         isLoading: true,
         closeOnClick: false,
       });
-      
+
       let totalGems = 0;
       parsedData.skills.forEach((skill) => {
         totalGems += skill.Gem.length;
@@ -212,7 +226,11 @@ const CodeReceiver = () => {
       const itemData = parseItemData(trimmedItemData);
       setItems(itemData);
 
-      const transformedData = await transformData(parsedData.skills, toastId, totalGems);
+      const transformedData = await transformData(
+        parsedData.skills,
+        toastId,
+        totalGems
+      );
       setSkillGems(transformedData);
 
       toast.update(toastId, {
@@ -225,7 +243,7 @@ const CodeReceiver = () => {
 
       setEnteredCode("");
     } catch (error) {
-      console.log(error)
+      console.log(error);
       toast.update(toastId, {
         render: "Failed to fetch data!",
         type: "error",
@@ -254,7 +272,9 @@ const CodeReceiver = () => {
       ></textarea>
       <button
         disabled={isLoading}
-        className={`btn ${appLoading ? "btn-loading" : "btn-solid-primary"} mx-auto`}
+        className={`btn ${
+          appLoading ? "btn-loading" : "btn-solid-primary"
+        } mx-auto`}
         onClick={() => codeConverter()}
       >
         {!appLoading ? "Start" : "Loading"}
