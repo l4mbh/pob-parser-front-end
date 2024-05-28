@@ -21,9 +21,7 @@ const CodeReceiver = () => {
         skillId: skillId,
       });
 
-      // console.log(JSON.parse(response.data))
-
-      const extraData = JSON.parse(response.data).cargoquery[0].title;
+      const extraData =response.data.cargoquery[0].title;
       extraData["inventory icon"] = extraData["inventory icon"].replace(
         /^File:/,
         ""
@@ -34,11 +32,11 @@ const CodeReceiver = () => {
         { skillImageName: extraData["inventory icon"] }
       );
 
-      const imgResponseObj = JSON.parse(imageResponse.data);
+      // const imgResponseObj = JSON.parse(imageResponse.data);
 
-      const pageIds = Object.keys(imgResponseObj.query.pages);
+      const pageIds = Object.keys(imageResponse.data.query.pages);
       const imgUrl =
-      imgResponseObj.query.pages[pageIds[0]].imageinfo[0].url;
+      imageResponse.data.query.pages[pageIds[0]].imageinfo[0].url;
       extraData.gemIconUrl = imgUrl;
 
       return extraData;
@@ -173,7 +171,8 @@ const CodeReceiver = () => {
 
     try {
       const res = await axios.post(`${PARSER_HOST}/api/pobb`, { url: pobbUrl });
-      if (res.statusText !== "OK")
+      console.log(res)
+      if (res.status !== 200)
         throw new Error("Invalid Pobb.in URL or data not found!");
       return res.data;
     } catch (error) {
