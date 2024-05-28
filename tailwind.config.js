@@ -11,7 +11,7 @@ export default {
       textColor: {
         light: "rgb(75 85 99 / 1)",
         dark: "rgb(203 213 225 / 1)",
-        int: "#013f8f",
+        int: "#1d55ad",
         dex: "#00b542",
         str: "#b8233c",
       },

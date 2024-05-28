@@ -33,7 +33,7 @@ function App() {
       className="relative bg-content1 dark:bg-backgroundPrimary min-h-screen"
     >
       <MainHeader />
-      <div className="container mx-auto overflow-hidden ">
+      <div className="container min-h-svh mx-auto overflow-hidden ">
         <div className="row">
           <div className="columns-1">
             <CodeReceiver />
@@ -47,8 +47,8 @@ function App() {
           </div>
         )}
         <ToTop className={toTopClasses} propClasses={toTopClasses} />
-      <Footer />
       </div>
+      <Footer />
       <ToastContainer
         closeOnClick={true}
         autoClose={1200}

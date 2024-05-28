@@ -6,7 +6,7 @@ const openGithub = () => {
 
 const Footer = () => {
   return (
-    <div className="w-screen bottom-0 flex justify-between items-center bg-black p-2 md:p-5">
+    <div className="min-w-screen  bottom-0 flex justify-between items-center bg-black p-2 md:p-5">
       <p>Copyright &copy; 2024 - l4mbh</p>
       <p onClick={openGithub} title="Github"><i className="fa-brands fa-github text-2xl hover:cursor-pointer"></i></p>
     </div>
