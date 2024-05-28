@@ -11,7 +11,7 @@ const DarkThemeSwitcher = () => {
 
   return (
     <DarkModeSwitch
-      className="dark:bg-gray-300 bg-zinc-600 p-1 rounded-full"
+      className="dark:bg-gray-300 bg-zinc-600 p-1 rounded-full ml-5"
       checked={isDarkMode}
       onChange={dardModeSSwitchHandler}
       defaultValue={isDarkMode}
