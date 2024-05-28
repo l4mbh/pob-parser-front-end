@@ -18,14 +18,14 @@ const CodeReceiver = () => {
   const fetchItemData = async (skillId, toastId) => {
     try {
       const response = await axios.get(
-        `${CORS_HOST}/https://www.poewiki.net/w/api.php?action=cargoquery&tables=skill_gems,skill,items&where=skill.skill_id="${skillId}"&fields=primary_attribute,name,inventory_icon,skill_id&format=json&join_on=skill._pageID=skill_gems._pageID,skill._pageID=items._pageID`
+        `https://www.poewiki.net/w/api.php?action=cargoquery&tables=skill_gems,skill,items&where=skill.skill_id="${skillId}"&fields=primary_attribute,name,inventory_icon,skill_id&format=json&join_on=skill._pageID=skill_gems._pageID,skill._pageID=items._pageID`
       );
 
       const extraData = response.data.cargoquery[0].title;
       extraData["inventory icon"] = extraData["inventory icon"].replace(/^File:/, "");
 
       const imageResponse = await axios.get(
-        `${CORS_HOST}/https://www.poewiki.net/w/api.php?action=query&titles=Image:${extraData["inventory icon"]}&prop=imageinfo&iiprop=url&format=json`
+        `https://www.poewiki.net/w/api.php?action=query&titles=Image:${extraData["inventory icon"]}&prop=imageinfo&iiprop=url&format=json`
       );
 
       const pageIds = Object.keys(imageResponse.data.query.pages);
@@ -131,7 +131,7 @@ const CodeReceiver = () => {
 
   const pobParser = async (postData) => {
     try {
-      const response = await fetch(`${CORS_HOST}/${PARSER_HOST}/pob`, {
+      const response = await fetch(`${PARSER_HOST}/pob`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: postData })
@@ -157,7 +157,7 @@ const CodeReceiver = () => {
     });
 
     try {
-      const res = await axios.get(`${CORS_HOST}/${pobbUrl}/raw`);
+      const res = await axios.get(`${pobbUrl}/raw`);
       if (res.statusText !== "OK") throw new Error("Invalid Pobb.in URL or data not found!");
       return res.data;
     } catch (error) {
