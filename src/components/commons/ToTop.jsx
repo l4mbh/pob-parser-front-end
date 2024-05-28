@@ -7,7 +7,7 @@ const ToTop = ({propClasses}) => {
   }
   
   return (
-    <div className={`z-10 hover:cursor-pointer ${propClasses} fixed bottom-5 right-5 bg-black dark:bg-light dark:text-light text-white p-2 rounded-full uppercase font-fontin`} onClick={toTop} >TOP</div>
+    <div className={`z-10 hover:cursor-pointer ${propClasses} fixed bottom-20 right-5 bg-black dark:bg-light dark:text-light text-white p-2 rounded-full uppercase font-fontin`} onClick={toTop} >TOP</div>
   )
 }
 

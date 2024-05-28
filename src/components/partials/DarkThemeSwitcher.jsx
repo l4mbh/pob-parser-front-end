@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useThemeContext } from "../store/ThemeContext";
+import { useThemeContext } from "../../store/ThemeContext";
 import { DarkModeSwitch } from "react-toggle-dark-mode";
 
 const DarkThemeSwitcher = () => {
