@@ -202,13 +202,13 @@ const CodeReceiver = () => {
         const itemNameId = await getGearItemInventoryName(parsedItem);
 
         if (itemNameId === "none") {
-          parsedItem.item_img_url = "https://placehold.co/600x400";
+          parsedItem.item_img_url = "https://fakeimg.pl/600x400?text=WTF??";
         } else {
           const imageResponse = await axios.post(
             `${PARSER_HOST}/api/poewiki-img`,
             {
               itemName: itemNameId,
-            }
+            },
           );
 
           const pageIds = Object.keys(imageResponse.data.query.pages);
