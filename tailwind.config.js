@@ -18,6 +18,21 @@ export default {
       fontFamily: {
         fontin: ["fontin", "serif"],
       },
+      keyframes : {
+        'drop-down': {
+          "0%": {
+            height: "0%",
+            opacity: "0",
+          },
+          "100%": {
+            height: "100%",
+            opacity: "1",
+          },
+        }
+      },
+      animation: {
+        scaleUp: "scaleUp 0.5s ease-in-out",
+      },
     },
   },
   plugins: [require("rippleui")],
