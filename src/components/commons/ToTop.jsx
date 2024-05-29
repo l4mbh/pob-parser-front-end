@@ -7,7 +7,7 @@ const ToTop = ({ propClasses }) => {
 
   return (
     <div
-      className={`z-10 transition-all group hover:cursor-pointer ${propClasses} fixed bottom-20 right-5 bg-black dark:bg-light dark:text-light text-white p-2 rounded-full uppercase font-fontin`}
+      className={`z-10 transition-all group hover:cursor-pointer ${propClasses} fixed bottom-20 right-5 bg-black dark:bg-light rounded-sm dark:text-light text-white p-2 uppercase font-fontin`}
       onClick={toTop}
     >
       <i class="group-hover:text-light/95 dark:group-hover:text-black  fa-solid fa-chevron-up"></i>
