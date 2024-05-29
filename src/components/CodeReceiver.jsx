@@ -104,7 +104,6 @@ const CodeReceiver = () => {
   }
 
   const getGearItemInventoryName = async (itemData) => {
-    // console.log(itemData);
     let itemName;
 
     if (itemData.rarity === "MAGIC" && itemData.item_name.includes("Flask")) {
@@ -119,7 +118,6 @@ const CodeReceiver = () => {
       itemName: itemName,
     });
 
-    console.log(itemNameId.data);
     return itemNameId.data;
   };
 
@@ -212,8 +210,6 @@ const CodeReceiver = () => {
               itemName: itemNameId,
             }
           );
-
-          // console.log(imageResponse)
 
           const pageIds = Object.keys(imageResponse.data.query.pages);
           const imgUrl =
